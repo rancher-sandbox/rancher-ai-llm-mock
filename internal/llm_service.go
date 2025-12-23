@@ -7,9 +7,10 @@ import (
 )
 
 type modelHandlers struct {
-	Ollama *handlers.OllamaHandler
-	Gemini *handlers.GeminiHandler
-	OpenAI *handlers.OpenAIHandler
+	Ollama  *handlers.OllamaHandler
+	Gemini  *handlers.GeminiHandler
+	OpenAI  *handlers.OpenAIHandler
+	Bedrock *handlers.BedrockHandler
 }
 
 type llmService struct {
@@ -24,9 +25,10 @@ func NewLLMService() *llmService {
 	return &llmService{
 		queue: queue,
 		Models: modelHandlers{
-			Gemini: handlers.NewGeminiHandler(queue),
-			OpenAI: handlers.NewOpenAIHandler(queue),
-			Ollama: handlers.NewOllamaHandler(queue),
+			Gemini:  handlers.NewGeminiHandler(queue),
+			OpenAI:  handlers.NewOpenAIHandler(queue),
+			Ollama:  handlers.NewOllamaHandler(queue),
+			Bedrock: handlers.NewBedrockHandler(queue),
 		},
 		Control: control.NewControlHandler(queue),
 	}
