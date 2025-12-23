@@ -21,6 +21,9 @@ func main() {
 
 	r.POST("/v1/control/clear", svc.Control.HandleClearRequest)
 
+	// Ollama model endpoint
+	r.POST("/api/chat", svc.Models.Ollama.HandleRequest)
+
 	// Gemini model endpoint
 	r.POST("/v1beta/models/:path", svc.Models.Gemini.HandleRequest)
 

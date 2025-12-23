@@ -7,6 +7,7 @@ import (
 )
 
 type modelHandlers struct {
+	Ollama *handlers.OllamaHandler
 	Gemini *handlers.GeminiHandler
 	OpenAI *handlers.OpenAIHandler
 }
@@ -25,6 +26,7 @@ func NewLLMService() *llmService {
 		Models: modelHandlers{
 			Gemini: handlers.NewGeminiHandler(queue),
 			OpenAI: handlers.NewOpenAIHandler(queue),
+			Ollama: handlers.NewOllamaHandler(queue),
 		},
 		Control: control.NewControlHandler(queue),
 	}
