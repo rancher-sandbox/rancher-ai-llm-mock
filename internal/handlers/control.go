@@ -1,4 +1,4 @@
-package control
+package controlHandler
 
 import (
 	"rancher-ai-llm-mock/internal/queue"
@@ -7,17 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
+type ControlHandler struct {
 	queue *queue.Queue
 }
 
-func NewHandler(queue *queue.Queue) *Handler {
-	return &Handler{
+func NewControlHandler(queue *queue.Queue) *ControlHandler {
+	return &ControlHandler{
 		queue: queue,
 	}
 }
 
-func (s *Handler) HandlePushRequest(c *gin.Context) {
+func (s *ControlHandler) HandlePushRequest(c *gin.Context) {
 	var req types.MockResponse
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Status(400)
@@ -27,7 +27,7 @@ func (s *Handler) HandlePushRequest(c *gin.Context) {
 	c.Status(204)
 }
 
-func (s *Handler) HandleClearRequest(c *gin.Context) {
+func (s *ControlHandler) HandleClearRequest(c *gin.Context) {
 	s.queue.Clear()
 	c.Status(204)
 }

@@ -21,8 +21,11 @@ func main() {
 
 	r.POST("/v1/control/clear", svc.Control.HandleClearRequest)
 
-	// Gemini model endpoints
+	// Gemini model endpoint
 	r.POST("/v1beta/models/:path", svc.Models.Gemini.HandleRequest)
+
+	// OpenAI model endpoint
+	r.POST("/chat/completions", svc.Models.OpenAI.HandleRequest)
 
 	r.Run(port)
 }

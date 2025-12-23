@@ -2,17 +2,18 @@ package internal
 
 import (
 	control "rancher-ai-llm-mock/internal/handlers"
-	gemini "rancher-ai-llm-mock/internal/handlers/models"
+	handlers "rancher-ai-llm-mock/internal/handlers/models"
 	"rancher-ai-llm-mock/internal/queue"
 )
 
 type modelHandlers struct {
-	Gemini *gemini.Handler
+	Gemini *handlers.GeminiHandler
+	OpenAI *handlers.OpenAIHandler
 }
 
 type llmService struct {
 	queue   *queue.Queue
-	Control *control.Handler
+	Control *control.ControlHandler
 	Models  modelHandlers
 }
 
@@ -22,8 +23,9 @@ func NewLLMService() *llmService {
 	return &llmService{
 		queue: queue,
 		Models: modelHandlers{
-			Gemini: gemini.NewHandler(queue),
+			Gemini: handlers.NewGeminiHandler(queue),
+			OpenAI: handlers.NewOpenAIHandler(queue),
 		},
-		Control: control.NewHandler(queue),
+		Control: control.NewControlHandler(queue),
 	}
 }

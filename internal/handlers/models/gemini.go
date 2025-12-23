@@ -1,4 +1,4 @@
-package gemini
+package modelHandlers
 
 import (
 	"encoding/json"
@@ -10,23 +10,24 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"rancher-ai-llm-mock/internal/queue"
-	types "rancher-ai-llm-mock/internal/types"
 )
 
-type Handler struct {
+type GeminiHandler struct {
 	queue *queue.Queue
 }
 
-func NewHandler(queue *queue.Queue) *Handler {
-	return &Handler{
+func NewGeminiHandler(queue *queue.Queue) *GeminiHandler {
+	return &GeminiHandler{
 		queue: queue,
 	}
 }
 
-func (s *Handler) HandleRequest(c *gin.Context) {
+func (s *GeminiHandler) HandleRequest(c *gin.Context) {
+	/**
+	 * Expected path format: {model}:{api-name}
+	 * example: gemini-flash-2.0:streamGenerateContent
+	 */
 	path := c.Param("path")
-
-	// "path" is {model}:{some-gemini-api-name}
 	parts := strings.Split(path, ":")
 
 	switch parts[1] {
@@ -37,7 +38,7 @@ func (s *Handler) HandleRequest(c *gin.Context) {
 	}
 }
 
-func (s *Handler) HandleStreamGenerateContent(c *gin.Context) {
+func (s *GeminiHandler) HandleStreamGenerateContent(c *gin.Context) {
 	w := c.Writer
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Transfer-Encoding", "chunked")
@@ -52,38 +53,29 @@ func (s *Handler) HandleStreamGenerateContent(c *gin.Context) {
 
 	response := s.queue.Pop()
 
-	var chunks []string
-	if len(response.Chunks) == 0 {
-		chunks = []string{"Mock service queue is empty.", " This is", " a default mock response", " from the Gemini model."}
-	} else {
-		chunks = response.Chunks
-	}
-
-	for i, text := range chunks {
-		resp := types.GenerateContentResponse{
-			Candidates: []types.Candidate{
+	for i, text := range response.Chunks {
+		resp := map[string]interface{}{
+			"candidates": []map[string]interface{}{
 				{
-					Content: types.Content{
-						Parts: []types.Part{
-							{Text: text},
+					"content": map[string]interface{}{
+						"parts": []map[string]interface{}{
+							{"text": text},
 						},
 					},
-					FinishReason: "length",
-					Index:        0,
+					"finishReason": "length",
+					"index":        0,
 				},
 			},
-			ModelVersion: "gemini-mock-v1",
-			ResponseId:   "resp-mock-12345",
+			"modelVersion": "gemini-mock-v1",
+			"responseId":   "resp-mock-12345",
 		}
 
-		// Use the encoder directly on the writer
 		enc := json.NewEncoder(w)
 		if err := enc.Encode(resp); err != nil {
 			return
 		}
 
-		// Handle commas
-		if i < len(chunks)-1 {
+		if i < len(response.Chunks)-1 {
 			fmt.Fprint(w, ",")
 		}
 

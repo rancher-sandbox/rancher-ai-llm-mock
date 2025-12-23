@@ -2,6 +2,8 @@ package queue
 
 import (
 	types "rancher-ai-llm-mock/internal/types"
+	"runtime"
+	"strings"
 	"sync"
 )
 
@@ -26,7 +28,21 @@ func (q *Queue) Pop() types.MockResponse {
 	q.mu.RLock()
 	if len(q.messages) == 0 {
 		q.mu.RUnlock()
-		return types.MockResponse{Chunks: []string{}}
+
+		// Send default response with file name (model name)
+		_, file, _, _ := runtime.Caller(1)
+		// Remove directory path, keep only file name and remove .go extension
+		model := file[strings.LastIndex(file, "/")+1 : strings.LastIndex(file, ".")]
+
+		chunks := []string{
+			"Mock service queue is empty. ",
+			"This is ",
+			"a default mock response ",
+			"from the ",
+			model,
+			" model."}
+
+		return types.MockResponse{Chunks: chunks}
 	}
 
 	resp := q.messages[0]
