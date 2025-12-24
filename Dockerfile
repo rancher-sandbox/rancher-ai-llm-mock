@@ -2,7 +2,7 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 COPY . .
-RUN go mod init rancher-ai-llm-mock || true
+RUN go mod init llm-mock || true
 RUN go mod tidy
 RUN go build -o llm-mock ./cmd/main.go
 

@@ -1,7 +1,7 @@
 package queue
 
 import (
-	types "rancher-ai-llm-mock/internal/types"
+	types "llm-mock/internal/types"
 	"runtime"
 	"strings"
 	"sync"

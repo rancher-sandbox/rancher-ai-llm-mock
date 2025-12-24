@@ -1,9 +1,9 @@
 package internal
 
 import (
-	control "rancher-ai-llm-mock/internal/handlers"
-	handlers "rancher-ai-llm-mock/internal/handlers/models"
-	"rancher-ai-llm-mock/internal/queue"
+	control "llm-mock/internal/handlers"
+	handlers "llm-mock/internal/handlers/models"
+	"llm-mock/internal/queue"
 )
 
 type modelHandlers struct {

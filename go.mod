@@ -1,8 +1,6 @@
-module rancher-ai-llm-mock
+module llm-mock
 
-go 1.23.0
-
-toolchain go1.23.1
+go 1.23.1
 
 require github.com/gin-gonic/gin v1.11.0
 

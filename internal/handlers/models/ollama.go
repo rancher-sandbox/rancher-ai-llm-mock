@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"rancher-ai-llm-mock/internal/queue"
+	"llm-mock/internal/queue"
 )
 
 type OllamaHandler struct {

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"llm-mock/internal"
 	"log"
-	"rancher-ai-llm-mock/internal"
 
 	"github.com/gin-gonic/gin"
 )

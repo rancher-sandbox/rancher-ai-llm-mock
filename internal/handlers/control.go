@@ -1,8 +1,8 @@
 package controlHandler
 
 import (
-	"rancher-ai-llm-mock/internal/queue"
-	"rancher-ai-llm-mock/internal/types"
+	"llm-mock/internal/queue"
+	"llm-mock/internal/types"
 
 	"github.com/gin-gonic/gin"
 )

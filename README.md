@@ -1,1 +1,1 @@
-# rancher-ai-llm-mock
+# llm-mock

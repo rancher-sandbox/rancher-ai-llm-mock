@@ -1,0 +1,12 @@
+replicaCount: 1
+image:
+  repository: ghcr.io/rancher-sandbox/llm-mock
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
