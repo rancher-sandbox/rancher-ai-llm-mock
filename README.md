@@ -1,6 +1,6 @@
 # llm-mock
 
-A mock server for Large Language Model (LLM) APIs, supporting OpenAI, Ollama, and Gemini endpoints. Useful for testing and development without relying on actual LLM services.
+A mock server for Large Language Model (LLM) APIs, supporting OpenAI, Ollama, Gemini and AWS Bedrock endpoints. Useful for testing and development without relying on actual LLM services.
 
 ## Installation
 
