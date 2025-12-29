@@ -41,5 +41,11 @@ func main() {
 	 */
 	r.POST("/chat/completions", svc.Models.OpenAI.HandleRequest)
 
+	/**
+	 * AWS Bedrock endpoint
+	 * https://docs.aws.amazon.com/bedrock/latest/APIReference/welcome.html
+	 */
+	r.POST("/model/:model/converse", svc.Models.Bedrock.HandleRequest)
+
 	r.Run(port)
 }
