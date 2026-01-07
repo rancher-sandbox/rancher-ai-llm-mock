@@ -7,7 +7,7 @@ A mock server for Large Language Model (LLM) APIs, supporting OpenAI, Ollama, Ge
 1. Clone this repository:
 	```sh
 	git clone rancher-sandbox/rancher-ai-llm-mock.git
-	cd llm-mock
+	cd rancher-ai-llm-mock
 	```
 
 2. Build and run with Go:
