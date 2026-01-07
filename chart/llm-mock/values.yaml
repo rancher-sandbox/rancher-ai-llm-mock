@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: ghcr.io/rancher-sandbox/llm-mock
-  tag: latest
+  tag: v1.0.0
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
