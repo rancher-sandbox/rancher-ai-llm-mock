@@ -46,8 +46,9 @@ You can control the mock responses using the `/v1/control` endpoints:
 		}
 	}
 	```
-	The next model API call will stream text chunks as response and use tool for MCP invocation.
-	The MCP tool must be one of the supported tools of the agent in request.
+	- The next model API call will stream text chunks as response and use tool for MCP invocation.
+	- The MCP tool must be one of the supported tools of the agent in request.
+	- If there are less than two agents configured in Rancher, the agent must not be provided.
 
 - `POST /v1/control/clear`: Clear the mock response queue.
 
