@@ -7,17 +7,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"llm-mock/internal/queue"
+	"llm-mock/internal/response"
 	"llm-mock/internal/types"
 )
 
 type OpenAIHandler struct {
-	queue *queue.Queue
+	response *response.Handler
 }
 
-func NewOpenAIHandler(queue *queue.Queue) *OpenAIHandler {
+func NewOpenAIHandler(response *response.Handler) *OpenAIHandler {
 	return &OpenAIHandler{
-		queue: queue,
+		response: response,
 	}
 }
 
@@ -33,7 +33,7 @@ func (s *OpenAIHandler) HandleRequest(c *gin.Context) {
 		return
 	}
 
-	response := s.queue.Pop(c)
+	response := s.response.Pop(c)
 
 	if response.Tool.Name != "" {
 		b := s.buildToolResponse(response.Tool)

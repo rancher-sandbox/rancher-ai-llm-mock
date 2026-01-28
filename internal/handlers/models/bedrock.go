@@ -8,16 +8,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"llm-mock/internal/queue"
+	"llm-mock/internal/response"
 )
 
 type BedrockHandler struct {
-	queue *queue.Queue
+	response *response.Handler
 }
 
-func NewBedrockHandler(queue *queue.Queue) *BedrockHandler {
+func NewBedrockHandler(response *response.Handler) *BedrockHandler {
 	return &BedrockHandler{
-		queue: queue,
+		response: response,
 	}
 }
 
@@ -26,7 +26,7 @@ func NewBedrockHandler(queue *queue.Queue) *BedrockHandler {
  * In the real-world scenario, the response should be sent in smaller chunks as they become available.
  */
 func (s *BedrockHandler) HandleRequest(c *gin.Context) {
-	response := s.queue.Pop(c)
+	response := s.response.Pop(c)
 
 	c.Header("Content-Type", "application/json")
 	c.Header("Transfer-Encoding", "chunked")

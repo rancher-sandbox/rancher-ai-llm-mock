@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:8083
 tags:
   - name: Control API
-    description: Endpoints for controlling the mock service (push/clear queue)
+    description: Endpoints for controlling the mock service (push/clear response queue)
   - name: Models API
     description: Endpoints for model-compatible chat APIs (Ollama, Gemini, OpenAI, AWS Bedrock)
 paths:
@@ -17,7 +17,7 @@ paths:
       description: |
         Payload validation rules:
         - At least one of `text` or a valid `tool` must be present.
-        - Valide tool must provide `tool.name` and `tool.args`.
+        - Valid tool must provide `tool.name` and `tool.args`.
       tags:
         - Control API
       requestBody:
@@ -183,7 +183,8 @@ components:
       properties:
         agent:
           type: string
-          description: Agent name to select (for agent selection requests) - if provided, this will be pushed first to simulate agent selection behavior
+          description:
+            Agent name to be selected by the Agent for adaptive agent requests. If provided, this will be pushed first to simulate agent selection behavior
         text:
           type: object
           description: Text response chunks
@@ -194,7 +195,10 @@ components:
                 type: string
         tool:
           type: object
-          description: Tool response - if provided, both `name` and `args` must be present
+          description: Tool response.
+            if provided,
+            - Both `name` and `args` must be present
+            - It must be one of the tools supported by the agent in the request, when an agent is provided.
           properties:
             name:
               type: string

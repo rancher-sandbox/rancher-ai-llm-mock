@@ -9,17 +9,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"llm-mock/internal/queue"
+	"llm-mock/internal/response"
 	"llm-mock/internal/types"
 )
 
 type GeminiHandler struct {
-	queue *queue.Queue
+	response *response.Handler
 }
 
-func NewGeminiHandler(queue *queue.Queue) *GeminiHandler {
+func NewGeminiHandler(response *response.Handler) *GeminiHandler {
 	return &GeminiHandler{
-		queue: queue,
+		response: response,
 	}
 }
 
@@ -47,7 +47,7 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 		return
 	}
 
-	response := s.queue.Pop(c)
+	response := s.response.Pop(c)
 
 	if alt == "sse" {
 		w.Header().Set("Content-Type", "text/event-stream")

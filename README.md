@@ -47,9 +47,10 @@ You can control the mock responses using the `/v1/control` endpoints:
 	}
 	```
 	The next model API call will stream text chunks as response and use tool for MCP invocation.
+	The MCP tool must be one of the supported tools of the agent in request.
 
 - `POST /v1/control/clear`: Clear the mock response queue.
 
-If the queue is empty, default mock responses will be used.
+If the response queue is empty, default mock responses will be used.
 
 See the [OpenAPI spec](openapi.yaml) for full API details.

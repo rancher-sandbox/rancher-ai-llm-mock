@@ -7,17 +7,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"llm-mock/internal/queue"
+	"llm-mock/internal/response"
 	"llm-mock/internal/types"
 )
 
 type OllamaHandler struct {
-	queue *queue.Queue
+	response *response.Handler
 }
 
-func NewOllamaHandler(queue *queue.Queue) *OllamaHandler {
+func NewOllamaHandler(response *response.Handler) *OllamaHandler {
 	return &OllamaHandler{
-		queue: queue,
+		response: response,
 	}
 }
 
@@ -31,7 +31,7 @@ func (s *OllamaHandler) HandleRequest(c *gin.Context) {
 		return
 	}
 
-	response := s.queue.Pop(c)
+	response := s.response.Pop(c)
 
 	if response.Tool.Name != "" {
 		resp := s.buildToolResponse(response.Tool)

@@ -3,7 +3,7 @@ package internal
 import (
 	control "llm-mock/internal/handlers"
 	handlers "llm-mock/internal/handlers/models"
-	"llm-mock/internal/queue"
+	response "llm-mock/internal/response"
 )
 
 type modelHandlers struct {
@@ -14,22 +14,22 @@ type modelHandlers struct {
 }
 
 type llmService struct {
-	queue   *queue.Queue
-	Control *control.ControlHandler
-	Models  modelHandlers
+	responseHandler *response.Handler
+	Control         *control.ControlHandler
+	Models          modelHandlers
 }
 
 func NewLLMService() *llmService {
-	queue := queue.NewQueue()
+	responseHandler := response.NewHandler()
 
 	return &llmService{
-		queue: queue,
+		responseHandler: responseHandler,
 		Models: modelHandlers{
-			Gemini:  handlers.NewGeminiHandler(queue),
-			OpenAI:  handlers.NewOpenAIHandler(queue),
-			Ollama:  handlers.NewOllamaHandler(queue),
-			Bedrock: handlers.NewBedrockHandler(queue),
+			Gemini:  handlers.NewGeminiHandler(responseHandler),
+			OpenAI:  handlers.NewOpenAIHandler(responseHandler),
+			Ollama:  handlers.NewOllamaHandler(responseHandler),
+			Bedrock: handlers.NewBedrockHandler(responseHandler),
 		},
-		Control: control.NewControlHandler(queue),
+		Control: control.NewControlHandler(responseHandler),
 	}
 }

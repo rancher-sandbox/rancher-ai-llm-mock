@@ -1,19 +1,19 @@
 package controlHandler
 
 import (
-	"llm-mock/internal/queue"
+	"llm-mock/internal/response"
 	"llm-mock/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ControlHandler struct {
-	queue *queue.Queue
+	response *response.Handler
 }
 
-func NewControlHandler(queue *queue.Queue) *ControlHandler {
+func NewControlHandler(response *response.Handler) *ControlHandler {
 	return &ControlHandler{
-		queue: queue,
+		response: response,
 	}
 }
 
@@ -40,23 +40,12 @@ func (s *ControlHandler) HandlePushRequest(c *gin.Context) {
 		return
 	}
 
-	// If Agent is provided, push it first so the we can simulate llm's agent selection behavior
-	if req.Agent != "" {
-		s.queue.Push(types.MockResponse{Text: types.Text{Chunks: []string{req.Agent}}})
-	}
-
-	// If both Text and Tool are provided, push Tool first, then Text so that the Agent simulate mcp call behavior
-	if len(req.Text.Chunks) > 0 && req.Tool.Name != "" {
-		s.queue.Push(types.MockResponse{Tool: req.Tool})
-		s.queue.Push(types.MockResponse{Text: req.Text})
-	} else {
-		s.queue.Push(req)
-	}
+	s.response.Push(req)
 
 	c.Status(204)
 }
 
 func (s *ControlHandler) HandleClearRequest(c *gin.Context) {
-	s.queue.Clear()
+	s.response.Clear()
 	c.Status(204)
 }
