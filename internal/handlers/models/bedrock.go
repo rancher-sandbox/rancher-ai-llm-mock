@@ -26,7 +26,7 @@ func NewBedrockHandler(queue *queue.Queue) *BedrockHandler {
  * In the real-world scenario, the response should be sent in smaller chunks as they become available.
  */
 func (s *BedrockHandler) HandleRequest(c *gin.Context) {
-	response := s.queue.Pop()
+	response := s.queue.Pop(c)
 
 	c.Header("Content-Type", "application/json")
 	c.Header("Transfer-Encoding", "chunked")

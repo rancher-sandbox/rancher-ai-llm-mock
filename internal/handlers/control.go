@@ -40,6 +40,11 @@ func (s *ControlHandler) HandlePushRequest(c *gin.Context) {
 		return
 	}
 
+	// If Agent is provided, push it first so the we can simulate llm's agent selection behavior
+	if req.Agent != "" {
+		s.queue.Push(types.MockResponse{Text: types.Text{Chunks: []string{req.Agent}}})
+	}
+
 	// If both Text and Tool are provided, push Tool first, then Text so that the Agent simulate mcp call behavior
 	if len(req.Text.Chunks) > 0 && req.Tool.Name != "" {
 		s.queue.Push(types.MockResponse{Tool: req.Tool})

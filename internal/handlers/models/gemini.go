@@ -47,7 +47,7 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 		return
 	}
 
-	response := s.queue.Pop()
+	response := s.queue.Pop(c)
 
 	if alt == "sse" {
 		w.Header().Set("Content-Type", "text/event-stream")

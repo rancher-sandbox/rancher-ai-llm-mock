@@ -181,8 +181,12 @@ components:
     MockResponse:
       type: object
       properties:
+        agent:
+          type: string
+          description: Agent name to select (for agent selection requests) - if provided, this will be pushed first to simulate agent selection behavior
         text:
           type: object
+          description: Text response chunks
           properties:
             chunks:
               type: array
@@ -190,6 +194,7 @@ components:
                 type: string
         tool:
           type: object
+          description: Tool response - if provided, both `name` and `args` must be present
           properties:
             name:
               type: string

@@ -34,6 +34,7 @@ You can control the mock responses using the `/v1/control` endpoints:
 - `POST /v1/control/push`: Push a mock response to the queue. Example body:
 	```json
 	{
+		"agent": "Rancher",
 		"text": {
 			"chunks": ["Hello", " world!"]
 		},

@@ -10,6 +10,7 @@ type Tool struct {
 }
 
 type MockResponse struct {
-	Text Text `json:"text"`
-	Tool Tool `json:"tool"`
+	Agent string `json:"agent,omitempty"`
+	Text  Text   `json:"text"`
+	Tool  Tool   `json:"tool"`
 }
