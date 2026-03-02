@@ -48,7 +48,17 @@ func (h *Handler) Push(req types.MockResponse) {
 
 	// If both Text and Tool are provided, push Tool first, then Text so that the Agent simulate mcp call behavior
 	if len(req.Text.Chunks) > 0 && req.Tool.Name != "" {
-		h.queue.Push(types.MockResponse{Tool: req.Tool})
+		// Check if Args is an array - if so, expand into multiple tool calls
+		if args, ok := req.Tool.Args.([]interface{}); ok {
+			for _, arg := range args {
+				tool := req.Tool
+				tool.Args = arg
+
+				h.queue.Push(types.MockResponse{Tool: tool})
+			}
+		} else {
+			h.queue.Push(types.MockResponse{Tool: req.Tool})
+		}
 		h.queue.Push(types.MockResponse{Text: req.Text})
 	} else {
 		h.queue.Push(req)
