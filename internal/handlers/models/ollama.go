@@ -64,13 +64,6 @@ func (s *OllamaHandler) buildTextResponse(chunk string, done bool) map[string]in
 }
 
 func (s *OllamaHandler) buildToolResponse(tool types.Tool) map[string]interface{} {
-	argsStr := "{}"
-	if tool.Args != nil {
-		if b, err := json.Marshal(tool.Args); err == nil {
-			argsStr = string(b)
-		}
-	}
-
 	return map[string]interface{}{
 		"message": map[string]interface{}{
 			"role":    "assistant",
@@ -79,7 +72,7 @@ func (s *OllamaHandler) buildToolResponse(tool types.Tool) map[string]interface{
 				{
 					"function": map[string]interface{}{
 						"name":      tool.Name,
-						"arguments": argsStr,
+						"arguments": tool.Args,
 					},
 				},
 			},
