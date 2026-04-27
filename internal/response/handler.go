@@ -46,9 +46,9 @@ func (h *Handler) Push(req types.MockResponse) {
 		h.queue.Push(types.MockResponse{Text: types.Text{Chunks: []string{req.Agent}}})
 	}
 
-	// Push tool response before text response to simulate llm's behavior of invoking tool before generating text response based on tool output
-	if req.Tool.Name != "" {
-		h.queue.Push(types.MockResponse{Tool: req.Tool})
+	// Push MCP tool response before text response to simulate llm's behavior of invoking tool before generating text response based on tool output
+	if req.MCPTool.Name != "" {
+		h.queue.Push(types.MockResponse{MCPTool: req.MCPTool})
 	}
 
 	// Push text response

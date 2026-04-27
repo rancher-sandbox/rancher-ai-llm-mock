@@ -33,8 +33,8 @@ func (s *OllamaHandler) HandleRequest(c *gin.Context) {
 
 	response := s.response.Pop()
 
-	if response.Tool.Name != "" {
-		resp := s.buildToolResponse([]types.Tool{response.Tool})
+	if response.MCPTool.Name != "" {
+		resp := s.buildToolResponse([]types.Tool{response.MCPTool})
 		enc := json.NewEncoder(w)
 		if err := enc.Encode(resp); err != nil {
 			return

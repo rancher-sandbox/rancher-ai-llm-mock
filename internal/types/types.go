@@ -14,6 +14,6 @@ type Tool struct {
 type MockResponse struct {
 	Agent   string `json:"agent,omitempty"`
 	Text    Text   `json:"text"`
-	Tool    Tool   `json:"tool"`
+	MCPTool Tool   `json:"mcpTool,omitempty"`
 	UITools []Tool `json:"uiTools,omitempty"`
 }

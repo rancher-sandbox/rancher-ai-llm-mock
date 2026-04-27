@@ -16,8 +16,8 @@ paths:
       summary: Push mock response(s) to the queue
       description: |
         Payload validation rules:
-        - At least one of `text` or a valid `tool` must be present.
-        - Valid tool must provide `tool.name` and `tool.args`.
+        - At least one of `text` or a valid `mcpTool` must be present.
+        - Valid mcpTool must provide `name` and `args`.
       tags:
         - Control API
       requestBody:
@@ -193,9 +193,9 @@ components:
               type: array
               items:
                 type: string
-        tool:
+        mcpTool:
           type: object
-          description: Tool response.
+          description: MCP tool response.
             if provided,
             - Both `name` and `args` must be present
             - It must be one of the tools supported by the agent in the request, when an agent is provided.

@@ -35,8 +35,8 @@ func (s *OpenAIHandler) HandleRequest(c *gin.Context) {
 
 	response := s.response.Pop()
 
-	if response.Tool.Name != "" {
-		b := s.buildToolResponse([]types.Tool{response.Tool})
+	if response.MCPTool.Name != "" {
+		b := s.buildToolResponse([]types.Tool{response.MCPTool})
 		w.Write([]byte("data: "))
 		w.Write(b)
 		w.Write([]byte("\n\n"))

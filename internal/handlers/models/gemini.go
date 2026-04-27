@@ -55,8 +55,8 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 		w.Header().Set("Connection", "keep-alive")
 
 		// We accept only 1 MCP tool per response for simplicity
-		if response.Tool.Name != "" {
-			toolResp := s.buildToolResponse([]types.Tool{response.Tool})
+		if response.MCPTool.Name != "" {
+			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool})
 			b, _ := json.Marshal(toolResp)
 			w.Write([]byte("data: "))
 			w.Write(b)
@@ -89,8 +89,8 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 		flusher.Flush()
 
 		// We accept only 1 MCP tool per response for simplicity
-		if response.Tool.Name != "" {
-			toolResp := s.buildToolResponse([]types.Tool{response.Tool})
+		if response.MCPTool.Name != "" {
+			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool})
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(toolResp); err != nil {
 				return

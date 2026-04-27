@@ -25,18 +25,18 @@ func (s *ControlHandler) HandlePushRequest(c *gin.Context) {
 		return
 	}
 
-	if req.Tool.Name != "" && req.Tool.Args == nil {
-		c.JSON(400, gin.H{"error": "Invalid payload: Tool.Args must be provided when Tool is set"})
+	if req.MCPTool.Name != "" && req.MCPTool.Args == nil {
+		c.JSON(400, gin.H{"error": "Invalid payload: MCPTool.Args must be provided when MCPTool is set"})
 		return
 	}
 
-	if req.Tool.Name == "" && req.Tool.Args != nil {
-		c.JSON(400, gin.H{"error": "Invalid payload: Tool.Name must be provided when Tool is set"})
+	if req.MCPTool.Name == "" && req.MCPTool.Args != nil {
+		c.JSON(400, gin.H{"error": "Invalid payload: MCPTool.Name must be provided when MCPTool is set"})
 		return
 	}
 
-	if (req.Text.Chunks == nil || len(req.Text.Chunks) == 0) && (req.Tool.Name == "" || req.Tool.Args == nil) {
-		c.JSON(400, gin.H{"error": "Invalid payload: one of Text or Tool fields must be provided"})
+	if (req.Text.Chunks == nil || len(req.Text.Chunks) == 0) && (req.MCPTool.Name == "" || req.MCPTool.Args == nil) {
+		c.JSON(400, gin.H{"error": "Invalid payload: one of Text or MCPTool fields must be provided"})
 		return
 	}
 

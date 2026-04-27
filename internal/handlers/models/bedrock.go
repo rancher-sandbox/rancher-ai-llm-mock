@@ -42,8 +42,8 @@ func (s *BedrockHandler) HandleRequest(c *gin.Context) {
 		totalChunks := len(response.Text.Chunks)
 		first := true
 
-		if response.Tool.Name != "" {
-			jsonTool, _ := json.Marshal(buildTool(response.Tool.Name, response.Tool.Args))
+		if response.MCPTool.Name != "" {
+			jsonTool, _ := json.Marshal(buildTool(response.MCPTool.Name, response.MCPTool.Args))
 			w.Write(jsonTool)
 			first = false
 		} else if len(response.UITools) > 0 {
