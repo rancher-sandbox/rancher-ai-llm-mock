@@ -206,5 +206,17 @@ components:
               oneOf:
                 - type: object
                 - type: array
+        uiTools:
+          type: array
+          description: Array of UI tools to be displayed in the response.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              args:
+                oneOf:
+                  - type: object
+                  - type: array
       required:
         - text

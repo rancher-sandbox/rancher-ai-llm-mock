@@ -36,7 +36,13 @@ func (s *OpenAIHandler) HandleRequest(c *gin.Context) {
 	response := s.response.Pop()
 
 	if response.Tool.Name != "" {
-		b := s.buildToolResponse(response.Tool)
+		b := s.buildToolResponse([]types.Tool{response.Tool})
+		w.Write([]byte("data: "))
+		w.Write(b)
+		w.Write([]byte("\n\n"))
+		flusher.Flush()
+	} else if len(response.UITools) > 0 {
+		b := s.buildToolResponse(response.UITools)
 		w.Write([]byte("data: "))
 		w.Write(b)
 		w.Write([]byte("\n\n"))
@@ -91,11 +97,24 @@ func (s *OpenAIHandler) buildTextResponse(chunk string, i int) []byte {
 	return b
 }
 
-func (s *OpenAIHandler) buildToolResponse(tool types.Tool) []byte {
-	argsStr := "{}"
-	if tool.Args != nil {
-		if b, err := json.Marshal(tool.Args); err == nil {
-			argsStr = string(b)
+func (s *OpenAIHandler) buildToolResponse(tools []types.Tool) []byte {
+	toolCalls := make([]map[string]interface{}, len(tools))
+
+	for i, tool := range tools {
+		argsStr := "{}"
+		if tool.Args != nil {
+			if b, err := json.Marshal(tool.Args); err == nil {
+				argsStr = string(b)
+			}
+		}
+
+		toolCalls[i] = map[string]interface{}{
+			"id":   "call_abc123",
+			"type": "function",
+			"function": map[string]interface{}{
+				"name":      tool.Name,
+				"arguments": argsStr,
+			},
 		}
 	}
 
@@ -108,17 +127,8 @@ func (s *OpenAIHandler) buildToolResponse(tool types.Tool) []byte {
 			{
 				"index": 0,
 				"delta": map[string]interface{}{
-					"role": "assistant",
-					"tool_calls": []map[string]interface{}{
-						{
-							"id":   "call_abc123",
-							"type": "function",
-							"function": map[string]interface{}{
-								"name":      tool.Name,
-								"arguments": argsStr,
-							},
-						},
-					},
+					"role":       "assistant",
+					"tool_calls": toolCalls,
 				},
 				"finish_reason": "tool_calls",
 			},

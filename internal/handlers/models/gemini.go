@@ -54,8 +54,16 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Connection", "keep-alive")
 
+		// We accept only 1 MCP tool per response for simplicity
 		if response.Tool.Name != "" {
-			toolResp := s.buildToolResponse(response.Tool)
+			toolResp := s.buildToolResponse([]types.Tool{response.Tool})
+			b, _ := json.Marshal(toolResp)
+			w.Write([]byte("data: "))
+			w.Write(b)
+			w.Write([]byte("\n\n"))
+			flusher.Flush()
+		} else if len(response.UITools) > 0 {
+			toolResp := s.buildToolResponse(response.UITools)
 			b, _ := json.Marshal(toolResp)
 			w.Write([]byte("data: "))
 			w.Write(b)
@@ -80,8 +88,15 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 		fmt.Fprint(w, "[")
 		flusher.Flush()
 
+		// We accept only 1 MCP tool per response for simplicity
 		if response.Tool.Name != "" {
-			toolResp := s.buildToolResponse(response.Tool)
+			toolResp := s.buildToolResponse([]types.Tool{response.Tool})
+			enc := json.NewEncoder(w)
+			if err := enc.Encode(toolResp); err != nil {
+				return
+			}
+		} else if len(response.UITools) > 0 {
+			toolResp := s.buildToolResponse(response.UITools)
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(toolResp); err != nil {
 				return
@@ -123,19 +138,23 @@ func (s *GeminiHandler) buildTextResponse(chunk string) map[string]interface{} {
 	}
 }
 
-func (s *GeminiHandler) buildToolResponse(tool types.Tool) map[string]interface{} {
+func (s *GeminiHandler) buildToolResponse(tools []types.Tool) map[string]interface{} {
+	parts := make([]map[string]interface{}, len(tools))
+
+	for i, tool := range tools {
+		parts[i] = map[string]interface{}{
+			"function_call": map[string]interface{}{
+				"name": tool.Name,
+				"args": tool.Args,
+			},
+		}
+	}
+
 	return map[string]interface{}{
 		"candidates": []map[string]interface{}{
 			{
 				"content": map[string]interface{}{
-					"parts": []map[string]interface{}{
-						{
-							"function_call": map[string]interface{}{
-								"name": tool.Name,
-								"args": tool.Args,
-							},
-						},
-					},
+					"parts": parts,
 				},
 				"finishReason": "STOP",
 				"index":        0,

@@ -34,7 +34,14 @@ func (s *OllamaHandler) HandleRequest(c *gin.Context) {
 	response := s.response.Pop()
 
 	if response.Tool.Name != "" {
-		resp := s.buildToolResponse(response.Tool)
+		resp := s.buildToolResponse([]types.Tool{response.Tool})
+		enc := json.NewEncoder(w)
+		if err := enc.Encode(resp); err != nil {
+			return
+		}
+		flusher.Flush()
+	} else if len(response.UITools) > 0 {
+		resp := s.buildToolResponse(response.UITools)
 		enc := json.NewEncoder(w)
 		if err := enc.Encode(resp); err != nil {
 			return
@@ -63,19 +70,23 @@ func (s *OllamaHandler) buildTextResponse(chunk string, done bool) map[string]in
 	}
 }
 
-func (s *OllamaHandler) buildToolResponse(tool types.Tool) map[string]interface{} {
+func (s *OllamaHandler) buildToolResponse(tools []types.Tool) map[string]interface{} {
+	toolCalls := make([]map[string]interface{}, len(tools))
+
+	for i, tool := range tools {
+		toolCalls[i] = map[string]interface{}{
+			"function": map[string]interface{}{
+				"name":      tool.Name,
+				"arguments": tool.Args,
+			},
+		}
+	}
+
 	return map[string]interface{}{
 		"message": map[string]interface{}{
-			"role":    "assistant",
-			"content": "",
-			"tool_calls": []map[string]interface{}{
-				{
-					"function": map[string]interface{}{
-						"name":      tool.Name,
-						"arguments": tool.Args,
-					},
-				},
-			},
+			"role":       "assistant",
+			"content":    "",
+			"tool_calls": toolCalls,
 		},
 		"done_reason": "stop",
 		"done":        true,

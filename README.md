@@ -45,11 +45,22 @@ You can control the mock responses using the `/v1/control` endpoints:
 					"key": "value"
 				}
 			]
-		}
+		},
+		"uiTools": [
+			{
+				"name": "explore",
+				"args": {
+					"arg1": ["Option 1", "Option 2"],
+					"arg2": "Additional info",
+					"arg3": 123
+				}
+			}
+		]
 	}
 	```
 	- The `args` field accepts either a single object or an array of objects (i.e. confirmation request payload for multiple resources).
-	- The next model API call will stream text chunks as response and use tool for MCP invocation.
+	- The `uiTools` field is optional and accepts an array of UI tools calls.
+	- The next model API call will stream text chunks as response, use tool for MCP invocation and uiTools for returning the ui tools calls.
 	- The MCP tool must be one of the supported tools of the agent in request.
 	- If there are less than two agents configured in Rancher, the agent must not be provided.
 

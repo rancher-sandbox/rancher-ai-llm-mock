@@ -46,6 +46,15 @@ func (s *BedrockHandler) HandleRequest(c *gin.Context) {
 			jsonTool, _ := json.Marshal(buildTool(response.Tool.Name, response.Tool.Args))
 			w.Write(jsonTool)
 			first = false
+		} else if len(response.UITools) > 0 {
+			for _, tool := range response.UITools {
+				if !first {
+					w.Write([]byte(","))
+				}
+				jsonTool, _ := json.Marshal(buildTool(tool.Name, tool.Args))
+				w.Write(jsonTool)
+				first = false
+			}
 		}
 
 		for _, chunkText := range response.Text.Chunks {

@@ -46,22 +46,17 @@ func (h *Handler) Push(req types.MockResponse) {
 		h.queue.Push(types.MockResponse{Text: types.Text{Chunks: []string{req.Agent}}})
 	}
 
-	// If both Text and Tool are provided, push Tool first, then Text so that the Agent simulate mcp call behavior
-	if len(req.Text.Chunks) > 0 && req.Tool.Name != "" {
-		// Check if Args is an array - if so, expand into multiple tool calls
-		if args, ok := req.Tool.Args.([]interface{}); ok {
-			for _, arg := range args {
-				tool := req.Tool
-				tool.Args = arg
+	// Push tool response before text response to simulate llm's behavior of invoking tool before generating text response based on tool output
+	if req.Tool.Name != "" {
+		h.queue.Push(types.MockResponse{Tool: req.Tool})
+	}
 
-				h.queue.Push(types.MockResponse{Tool: tool})
-			}
-		} else {
-			h.queue.Push(types.MockResponse{Tool: req.Tool})
-		}
-		h.queue.Push(types.MockResponse{Text: req.Text})
-	} else {
-		h.queue.Push(req)
+	// Push text response
+	h.queue.Push(types.MockResponse{Text: req.Text})
+
+	// Push UITools calls after text response to simulate llm's behavior of generating text response before invoking UITools based on text response
+	if len(req.UITools) > 0 {
+		h.queue.Push(types.MockResponse{UITools: req.UITools})
 	}
 }
 
