@@ -25,8 +25,8 @@ jobs:
         uses: rancher-eio/read-vault-secrets@0da85151ad1f19ed7986c41587e45aac1ace74b6 # main
         with:
           secrets: |
-            secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
+            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials username |  DOCKER_USERNAME;
+            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials password |  DOCKER_PASSWORD;
 
       - name: Push images
         uses: rancher/ecm-distro-tools/actions/publish-image@575bb831c67edd950bfedb59d41dd127bd0005d6 # master
