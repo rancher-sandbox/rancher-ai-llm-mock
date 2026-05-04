@@ -5,10 +5,12 @@ on:
     tags:
       - 'v*'
 
+permissions: {}
+
 jobs:
   release:
     permissions:
-      contents: read
+      contents: write
       id-token: write
 
     runs-on: ubuntu-latest
@@ -16,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
       - name: Read secrets
         uses: rancher-eio/read-vault-secrets@0da85151ad1f19ed7986c41587e45aac1ace74b6 # main
