@@ -38,5 +38,6 @@ jobs:
           public-repo: rancher-sandbox
           public-username: ${{ env.DOCKER_USERNAME }}
           public-password: ${{ env.DOCKER_PASSWORD }}
-          make-target: push-image
+          push-to-public: true
           push-to-prime: false
+          make-target: push-image
