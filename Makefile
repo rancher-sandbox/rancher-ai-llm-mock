@@ -2,7 +2,7 @@
 TARGET_PLATFORMS ?= linux/amd64,linux/arm64
 
 TAG ?= dev
-REPO ?= rancher-sandbox
+REPO ?= rancher
 IMAGE ?= rancher-ai-llm-mock
 IMAGE_NAME ?= $(REPO)/$(IMAGE):$(TAG)
 

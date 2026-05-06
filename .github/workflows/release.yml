@@ -31,7 +31,7 @@ jobs:
           tag: ${{ github.ref_name }}
           platforms: linux/amd64,linux/arm64
 
-          public-repo: rancher-sandbox
+          public-repo: rancher
           public-username: ${{ env.DOCKER_USERNAME }}
           public-password: ${{ env.DOCKER_PASSWORD }}
           push-to-public: true
