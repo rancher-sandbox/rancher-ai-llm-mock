@@ -48,6 +48,8 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 	}
 
 	response := s.response.Pop()
+	u := computeUsage(c, response)
+	lastChunk := len(response.Text.Chunks) - 1
 
 	if alt == "sse" {
 		w.Header().Set("Content-Type", "text/event-stream")
@@ -56,22 +58,22 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 
 		// We accept only 1 MCP tool per response for simplicity
 		if response.MCPTool.Name != "" {
-			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool})
+			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool}, u)
 			b, _ := json.Marshal(toolResp)
 			w.Write([]byte("data: "))
 			w.Write(b)
 			w.Write([]byte("\n\n"))
 			flusher.Flush()
 		} else if len(response.UITools) > 0 {
-			toolResp := s.buildToolResponse(response.UITools)
+			toolResp := s.buildToolResponse(response.UITools, u)
 			b, _ := json.Marshal(toolResp)
 			w.Write([]byte("data: "))
 			w.Write(b)
 			w.Write([]byte("\n\n"))
 			flusher.Flush()
 		} else {
-			for _, chunk := range response.Text.Chunks {
-				resp := s.buildTextResponse(chunk)
+			for i, chunk := range response.Text.Chunks {
+				resp := s.buildTextResponse(chunk, u, i == lastChunk)
 				b, _ := json.Marshal(resp)
 				w.Write([]byte("data: "))
 				w.Write(b)
@@ -90,20 +92,20 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 
 		// We accept only 1 MCP tool per response for simplicity
 		if response.MCPTool.Name != "" {
-			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool})
+			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool}, u)
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(toolResp); err != nil {
 				return
 			}
 		} else if len(response.UITools) > 0 {
-			toolResp := s.buildToolResponse(response.UITools)
+			toolResp := s.buildToolResponse(response.UITools, u)
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(toolResp); err != nil {
 				return
 			}
 		} else {
 			for i, chunk := range response.Text.Chunks {
-				resp := s.buildTextResponse(chunk)
+				resp := s.buildTextResponse(chunk, u, i == lastChunk)
 				enc := json.NewEncoder(w)
 				if err := enc.Encode(resp); err != nil {
 					return
@@ -122,7 +124,25 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 	}
 }
 
-func (s *GeminiHandler) buildTextResponse(chunk string) map[string]interface{} {
+// Gemini usage counts are cumulative; sending them on the last chunk only gives the full totals.
+func buildGeminiUsage(u usage) map[string]interface{} {
+	return map[string]interface{}{
+		"promptTokenCount":        u.InputTokens,
+		"candidatesTokenCount":    u.OutputTokens,
+		"totalTokenCount":         u.TotalTokens(),
+		"cachedContentTokenCount": 0,
+	}
+}
+
+func (s *GeminiHandler) buildTextResponse(chunk string, u usage, last bool) map[string]interface{} {
+	resp := s.buildTextCandidates(chunk)
+	if last {
+		resp["usageMetadata"] = buildGeminiUsage(u)
+	}
+	return resp
+}
+
+func (s *GeminiHandler) buildTextCandidates(chunk string) map[string]interface{} {
 	return map[string]interface{}{
 		"candidates": []map[string]interface{}{
 			{
@@ -138,7 +158,7 @@ func (s *GeminiHandler) buildTextResponse(chunk string) map[string]interface{} {
 	}
 }
 
-func (s *GeminiHandler) buildToolResponse(tools []types.Tool) map[string]interface{} {
+func (s *GeminiHandler) buildToolResponse(tools []types.Tool, u usage) map[string]interface{} {
 	parts := make([]map[string]interface{}, len(tools))
 
 	for i, tool := range tools {
@@ -160,5 +180,6 @@ func (s *GeminiHandler) buildToolResponse(tools []types.Tool) map[string]interfa
 				"index":        0,
 			},
 		},
+		"usageMetadata": buildGeminiUsage(u),
 	}
 }

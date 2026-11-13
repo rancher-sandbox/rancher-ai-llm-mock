@@ -34,6 +34,7 @@ func (s *OpenAIHandler) HandleRequest(c *gin.Context) {
 	}
 
 	response := s.response.Pop()
+	u := computeUsage(c, response)
 
 	if response.MCPTool.Name != "" {
 		b := s.buildToolResponse([]types.Tool{response.MCPTool})
@@ -59,6 +60,12 @@ func (s *OpenAIHandler) HandleRequest(c *gin.Context) {
 	}
 
 	b := s.buildFinalChunk()
+	w.Write([]byte("data: "))
+	w.Write(b)
+	w.Write([]byte("\n\n"))
+	flusher.Flush()
+
+	b = s.buildUsageChunk(u)
 	w.Write([]byte("data: "))
 	w.Write(b)
 	w.Write([]byte("\n\n"))
@@ -150,6 +157,31 @@ func (s *OpenAIHandler) buildFinalChunk() []byte {
 				"index":         0,
 				"delta":         map[string]interface{}{},
 				"finish_reason": "stop",
+			},
+		},
+	}
+	b, _ := json.Marshal(data)
+
+	return b
+}
+
+// Sent when stream_options.include_usage is set: empty choices, usage only.
+func (s *OpenAIHandler) buildUsageChunk(u usage) []byte {
+	data := map[string]interface{}{
+		"id":      "chatcmpl-mock-12345",
+		"object":  "chat.completion.chunk",
+		"created": time.Now().Unix(),
+		"model":   "openai-mock-v1",
+		"choices": []map[string]interface{}{},
+		"usage": map[string]interface{}{
+			"prompt_tokens":     u.InputTokens,
+			"completion_tokens": u.OutputTokens,
+			"total_tokens":      u.TotalTokens(),
+			"prompt_tokens_details": map[string]interface{}{
+				"cached_tokens": 0,
+			},
+			"completion_tokens_details": map[string]interface{}{
+				"reasoning_tokens": 0,
 			},
 		},
 	}

@@ -27,6 +27,7 @@ func NewBedrockHandler(response *response.Handler) *BedrockHandler {
  */
 func (s *BedrockHandler) HandleRequest(c *gin.Context) {
 	response := s.response.Pop()
+	u := computeUsage(c, response)
 
 	c.Header("Content-Type", "application/json")
 	c.Header("Transfer-Encoding", "chunked")
@@ -39,7 +40,6 @@ func (s *BedrockHandler) HandleRequest(c *gin.Context) {
 	c.Stream(func(w io.Writer) bool {
 		w.Write([]byte(`{"output":{"message":{"role":"assistant","content":[`))
 
-		totalChunks := len(response.Text.Chunks)
 		first := true
 
 		if response.MCPTool.Name != "" {
@@ -70,9 +70,11 @@ func (s *BedrockHandler) HandleRequest(c *gin.Context) {
 		}
 
 		usageJSON := map[string]interface{}{
-			"inputTokens":  15,
-			"outputTokens": totalChunks,
-			"totalTokens":  15 + totalChunks,
+			"inputTokens":           u.InputTokens,
+			"outputTokens":          u.OutputTokens,
+			"totalTokens":           u.TotalTokens(),
+			"cacheReadInputTokens":  0,
+			"cacheWriteInputTokens": 0,
 		}
 		usageBytes, _ := json.Marshal(usageJSON)
 
