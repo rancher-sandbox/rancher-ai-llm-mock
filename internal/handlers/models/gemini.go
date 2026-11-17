@@ -58,14 +58,14 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 
 		// We accept only 1 MCP tool per response for simplicity
 		if response.MCPTool.Name != "" {
-			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool}, u)
+			toolResp := stripUsage(response, s.buildToolResponse([]types.Tool{response.MCPTool}, u), "usageMetadata")
 			b, _ := json.Marshal(toolResp)
 			w.Write([]byte("data: "))
 			w.Write(b)
 			w.Write([]byte("\n\n"))
 			flusher.Flush()
 		} else if len(response.UITools) > 0 {
-			toolResp := s.buildToolResponse(response.UITools, u)
+			toolResp := stripUsage(response, s.buildToolResponse(response.UITools, u), "usageMetadata")
 			b, _ := json.Marshal(toolResp)
 			w.Write([]byte("data: "))
 			w.Write(b)
@@ -73,7 +73,7 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 			flusher.Flush()
 		} else {
 			for i, chunk := range response.Text.Chunks {
-				resp := s.buildTextResponse(chunk, u, i == lastChunk)
+				resp := stripUsage(response, s.buildTextResponse(chunk, u, i == lastChunk), "usageMetadata")
 				b, _ := json.Marshal(resp)
 				w.Write([]byte("data: "))
 				w.Write(b)
@@ -92,20 +92,20 @@ func (s *GeminiHandler) handleStreamGenerateContent(c *gin.Context) {
 
 		// We accept only 1 MCP tool per response for simplicity
 		if response.MCPTool.Name != "" {
-			toolResp := s.buildToolResponse([]types.Tool{response.MCPTool}, u)
+			toolResp := stripUsage(response, s.buildToolResponse([]types.Tool{response.MCPTool}, u), "usageMetadata")
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(toolResp); err != nil {
 				return
 			}
 		} else if len(response.UITools) > 0 {
-			toolResp := s.buildToolResponse(response.UITools, u)
+			toolResp := stripUsage(response, s.buildToolResponse(response.UITools, u), "usageMetadata")
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(toolResp); err != nil {
 				return
 			}
 		} else {
 			for i, chunk := range response.Text.Chunks {
-				resp := s.buildTextResponse(chunk, u, i == lastChunk)
+				resp := stripUsage(response, s.buildTextResponse(chunk, u, i == lastChunk), "usageMetadata")
 				enc := json.NewEncoder(w)
 				if err := enc.Encode(resp); err != nil {
 					return

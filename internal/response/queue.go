@@ -16,7 +16,8 @@ func NewQueue() *Queue {
 	}
 }
 
-func (q *Queue) Push(response types.MockResponse) {
+func (q *Queue) Push(response types.MockResponse, trackUsage bool) {
+	response.TrackUsage = trackUsage
 	q.mu.Lock()
 	q.messages = append(q.messages, response)
 	q.mu.Unlock()

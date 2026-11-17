@@ -78,8 +78,11 @@ func (s *BedrockHandler) HandleRequest(c *gin.Context) {
 		}
 		usageBytes, _ := json.Marshal(usageJSON)
 
-		w.Write([]byte(`]}},"stopReason":"end_turn","usage":`))
-		w.Write(usageBytes)
+		w.Write([]byte(`]}},"stopReason":"end_turn"`))
+		if response.TrackUsage {
+			w.Write([]byte(`,"usage":`))
+			w.Write(usageBytes)
+		}
 		w.Write([]byte(`}`))
 
 		return false

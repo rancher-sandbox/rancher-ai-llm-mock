@@ -37,10 +37,12 @@ func generateResponse() types.MockResponse {
 		model,
 		" model."}
 
-	return types.MockResponse{Text: types.Text{Chunks: chunks}}
+	return types.MockResponse{Text: types.Text{Chunks: chunks}, TrackUsage: true}
 }
 
 func (h *Handler) Push(req types.PushRequestArgs) {
+	trackUsage := req.TrackUsage == nil || *req.TrackUsage
+
 	if len(req.AgentResponses) > 0 {
 		for i := 0; i < len(req.AgentResponses); i++ {
 			resp := req.AgentResponses[i]
@@ -52,29 +54,29 @@ func (h *Handler) Push(req types.PushRequestArgs) {
 					Args: map[string]any{
 						"query": "mock query for agent: " + resp.Agent,
 					},
-				}})
+				}}, trackUsage)
 			}
 
 			// Push MCP tool response before text response to simulate llm's behavior of invoking tool before generating text response based on tool output
 			if resp.MCPTool.Name != "" {
-				h.queue.Push(types.MockResponse{MCPTool: resp.MCPTool})
+				h.queue.Push(types.MockResponse{MCPTool: resp.MCPTool}, trackUsage)
 			}
 		}
 
 		// Stop subagents loop when the last agent response has agent field. This works in Adaptive mode scenario.
 		if req.AgentResponses[len(req.AgentResponses)-1].Agent != "" {
-			h.queue.Push(types.MockResponse{Text: types.Text{Chunks: []string{""}}})
+			h.queue.Push(types.MockResponse{Text: types.Text{Chunks: []string{""}}}, trackUsage)
 		}
 	}
 
 	// Push the final text response after processing all agent responses to simulate llm's behavior of generating text from subagent responses
-	if req.Text.Chunks != nil && len(req.Text.Chunks) > 0 {
-		h.queue.Push(types.MockResponse{Text: req.Text})
+	if len(req.Text.Chunks) > 0 {
+		h.queue.Push(types.MockResponse{Text: req.Text}, trackUsage)
 	}
 
 	// Push UITools calls after text response to simulate llm's behavior of generating text response before invoking UITools based on text response
 	if len(req.UITools) > 0 {
-		h.queue.Push(types.MockResponse{UITools: req.UITools})
+		h.queue.Push(types.MockResponse{UITools: req.UITools}, trackUsage)
 	}
 }
 

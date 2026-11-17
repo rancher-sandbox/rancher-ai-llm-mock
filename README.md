@@ -74,6 +74,7 @@ You can control the mock responses using the `/v1/control` endpoints:
 	- `agentResponses`: Array of agent responses with optional MCP tool calls
 	- `text`: Optional text response containing message chunks
 	- `uiTools`: Optional array of UI tools to display. Valid tools can be found in rancher-ai-ui repository in `ui-tools.json`
+	- `trackUsage`: Optional boolean (default `true`). If `false`, the pushed responses are returned without token usage data.
 	- The `args` field in tools accepts either a single object or an array of objects (e.g. confirmation request payload for multiple resources)
 	- The next model API call will stream text chunks as response, use mcpTool for MCP invocation and uiTools for returning the ui tools calls.
 	- The MCP tool must be one of the supported tools of the agent in request.

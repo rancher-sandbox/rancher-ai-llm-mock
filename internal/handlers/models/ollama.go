@@ -35,14 +35,14 @@ func (s *OllamaHandler) HandleRequest(c *gin.Context) {
 	u := computeUsage(c, response)
 
 	if response.MCPTool.Name != "" {
-		resp := s.buildToolResponse([]types.Tool{response.MCPTool}, u)
+		resp := stripUsage(response, s.buildToolResponse([]types.Tool{response.MCPTool}, u), ollamaUsageKeys...)
 		enc := json.NewEncoder(w)
 		if err := enc.Encode(resp); err != nil {
 			return
 		}
 		flusher.Flush()
 	} else if len(response.UITools) > 0 {
-		resp := s.buildToolResponse(response.UITools, u)
+		resp := stripUsage(response, s.buildToolResponse(response.UITools, u), ollamaUsageKeys...)
 		enc := json.NewEncoder(w)
 		if err := enc.Encode(resp); err != nil {
 			return
@@ -50,7 +50,7 @@ func (s *OllamaHandler) HandleRequest(c *gin.Context) {
 		flusher.Flush()
 	} else {
 		for i, text := range response.Text.Chunks {
-			resp := s.buildTextResponse(text, i == len(response.Text.Chunks)-1, u)
+			resp := stripUsage(response, s.buildTextResponse(text, i == len(response.Text.Chunks)-1, u), ollamaUsageKeys...)
 			enc := json.NewEncoder(w)
 			if err := enc.Encode(resp); err != nil {
 				return
@@ -77,6 +77,8 @@ func (s *OllamaHandler) buildTextResponse(chunk string, done bool, u usage) map[
 }
 
 // Ollama reports token counts only on the final (done) chunk.
+var ollamaUsageKeys = []string{"prompt_eval_count", "eval_count"}
+
 func addOllamaUsage(resp map[string]interface{}, u usage) {
 	resp["prompt_eval_count"] = u.InputTokens
 	resp["eval_count"] = u.OutputTokens

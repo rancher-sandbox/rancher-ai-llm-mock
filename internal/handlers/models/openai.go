@@ -66,10 +66,12 @@ func (s *OpenAIHandler) HandleRequest(c *gin.Context) {
 	flusher.Flush()
 
 	b = s.buildUsageChunk(u)
-	w.Write([]byte("data: "))
-	w.Write(b)
-	w.Write([]byte("\n\n"))
-	flusher.Flush()
+	if response.TrackUsage {
+		w.Write([]byte("data: "))
+		w.Write(b)
+		w.Write([]byte("\n\n"))
+		flusher.Flush()
+	}
 
 	// End the stream
 	w.Write([]byte("data: [DONE]\n\n"))

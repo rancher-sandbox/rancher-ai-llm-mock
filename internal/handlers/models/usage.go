@@ -48,3 +48,12 @@ func computeUsage(c *gin.Context, resp types.MockResponse) usage {
 		OutputTokens: max(estimateTokens(out.String()), 1),
 	}
 }
+
+func stripUsage(resp types.MockResponse, payload map[string]interface{}, keys ...string) map[string]interface{} {
+	if !resp.TrackUsage {
+		for _, key := range keys {
+			delete(payload, key)
+		}
+	}
+	return payload
+}

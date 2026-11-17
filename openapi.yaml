@@ -229,3 +229,7 @@ components:
           description: Array of UI tools to be displayed in the response.
           items:
             $ref: '#/components/schemas/Tool'
+        trackUsage:
+          type: boolean
+          default: true
+          description: If false, the pushed responses are returned without token usage data.

@@ -12,9 +12,10 @@ type Tool struct {
 }
 
 type MockResponse struct {
-	Text    Text   `json:"text"`
-	MCPTool Tool   `json:"mcpTool,omitempty"`
-	UITools []Tool `json:"uiTools,omitempty"`
+	Text       Text   `json:"text"`
+	MCPTool    Tool   `json:"mcpTool,omitempty"`
+	UITools    []Tool `json:"uiTools,omitempty"`
+	TrackUsage bool   `json:"-"`
 }
 
 type AgentResponse struct {
@@ -26,4 +27,5 @@ type PushRequestArgs struct {
 	AgentResponses []AgentResponse `json:"agentResponses,omitempty"`
 	Text           Text            `json:"text,omitempty"`
 	UITools        []Tool          `json:"uiTools,omitempty"`
+	TrackUsage     *bool           `json:"trackUsage,omitempty"`
 }
